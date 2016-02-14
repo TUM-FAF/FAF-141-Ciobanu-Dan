@@ -7,22 +7,34 @@ LPCWSTR g_szClassName = L"mainClass";
 
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
-	
+	HDC ContextHandle;
+	PAINTSTRUCT PaintStructure;
+	RECT ClientRectangle;
+	int window;
+	LPCWSTR MyText = L"Done with Pride and Prejudice by me!";
 	switch (Msg)
 	{
 		case WM_CREATE:
 			{
 				LPCWSTR button01_ID = L"BUTTON";
 				LPCWSTR button01_text = L"DEFAULT";
-				HWND button01 = CreateWindowEx(NULL, button01_ID, button01_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 5, 85, 25, hwnd, (HMENU)BUTTON_01, NULL, NULL);
+				HWND button01 = CreateWindowEx(WS_EX_WINDOWEDGE, button01_ID, button01_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 5, 85, 25, hwnd, (HMENU)BUTTON_01, NULL, NULL);
 	
 				LPCWSTR button02_ID = L"BUTTON";
 				LPCWSTR button02_text = L"CUSTOM";
 				HWND button02 = CreateWindowEx(NULL, button02_ID, button02_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 35, 85, 25, hwnd, (HMENU)BUTTON_02, NULL, NULL);
 	
-	
 			}
 			break;
+		case WM_PAINT:
+			ContextHandle = BeginPaint(hwnd, &PaintStructure);
+			GetClientRect(hwnd, &ClientRectangle);
+			DrawText(ContextHandle, MyText, -1,
+				&ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+
+			EndPaint(hwnd, &PaintStructure);
+
+			return 0;
 		case WM_COMMAND:
 			
 			{
@@ -37,6 +49,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 				}	
 			}
 			break;
+		
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
 			break;
@@ -57,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	ZeroMemory(&wc, sizeof(wc));
 
-	wc.style = 0;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = g_szClassName;
 	wc.lpfnWndProc = WndProc;
