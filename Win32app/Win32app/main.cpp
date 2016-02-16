@@ -23,15 +23,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 				LPCWSTR button02_ID = L"BUTTON";
 				LPCWSTR button02_text = L"CUSTOM";
 				HWND button02 = CreateWindowEx(NULL, button02_ID, button02_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 35, 85, 25, hwnd, (HMENU)BUTTON_02, NULL, NULL);
-	
-			}
+				
+
+				CreateWindow(TEXT("EDIT"), TEXT("DEFAULT STYLE"), WS_VISIBLE | WS_CHILD| WS_BORDER | ES_AUTOHSCROLL, 
+					
+					5, 65, 200, 20, hwnd, (HMENU) NULL, NULL, NULL);
+				/*CreateWindow(TEXT("EDIT"), TEXT("CUSTOM STYLE"), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL,
+
+					5, 90, 200, 20, hwnd, (HMENU)NULL, NULL, NULL);*/
+				}
 			break;
 		case WM_PAINT:
 			ContextHandle = BeginPaint(hwnd, &PaintStructure);
 			GetClientRect(hwnd, &ClientRectangle);
 			DrawText(ContextHandle, MyText, -1,
 				&ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-
+			
 			EndPaint(hwnd, &PaintStructure);
 
 			return 0;
@@ -48,10 +55,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 						break;
 				}	
 			}
+
 			break;
 		
 		case WM_CLOSE:
-			DestroyWindow(hwnd);
+			{
+				if (MessageBox(hwnd, L"Do you want to exit?", L"Exit", MB_OKCANCEL)==IDOK)
+					DestroyWindow(hwnd);
+			}
+			
 			break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
@@ -63,7 +75,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	
+
 	WNDCLASSEX wc;
 	MSG msg;
 	HWND hwnd;
@@ -86,12 +98,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		LPCWSTR Error10_Caption = L"Error";
 		MessageBox(NULL, Error01, Error10_Caption, MB_OK | MB_ICONERROR);
 	}
-	
-	LPCWSTR WindowTitle = L"LAB 1";
-	
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, WindowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-		500, 300, NULL, NULL, hInstance, NULL);
 
+	LPCWSTR WindowTitle = L"LAB 1";
+
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, WindowTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100,
+		500, 300, NULL, NULL, hInstance, NULL);
+	
 	if (hwnd == NULL) {
 		LPCWSTR Error02 = L"Could not create window!";
 		LPCWSTR Error02_Caption = L"Error";
