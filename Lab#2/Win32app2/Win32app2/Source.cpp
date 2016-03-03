@@ -4,19 +4,56 @@
 
 LPCWSTR ClassName = L"mainClass";
 
-#define BUTTON_01 1
-#define BUTTON_02 2
-#define IDM_SYS_ABOUT 3
-#define IDM_SYS_HELP 4
-#define IDM_SYS_CHANGE 5
-#define IDC_HSCROLL 12
-#define IDC_VERT 13
-#define MAX_RANGE 14
-
-
-
 HWND TextBox;
 HWND hWndSizeBox;
+HINSTANCE hInstance;
+
+
+LRESULT CALLBACK DialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg) {
+
+	case WM_CREATE:
+		CreateWindowW(L"button", L"Ok",
+			WS_VISIBLE | WS_CHILD,
+			100, 100, 80, 25, hwnd, (HMENU)1, NULL, NULL);
+		break;
+
+	case WM_COMMAND:
+		DestroyWindow(hwnd);
+		break;
+
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
+
+	}
+
+	return (DefWindowProcW(hwnd, msg, wParam, lParam));
+}
+
+
+void CreateDialogBox(HWND hwnd) {
+
+	CreateWindowExW(WS_EX_DLGMODALFRAME | WS_EX_TOPMOST, TEXT("DialogClass"), L"Dialog Box",
+		WS_VISIBLE | WS_SYSMENU | WS_CAPTION, 0, 0, 350, 250,
+		NULL, NULL, hInstance, NULL);
+}
+
+
+void RegisterDialogClass(HWND hwnd) {
+	WNDCLASSEXW wndc = { 0 };
+	BOOL  CALLBACK DialogProcedure(HWND, UINT, WPARAM, LPARAM);
+	
+	wndc.cbSize = sizeof(WNDCLASSEXW);
+	wndc.lpfnWndProc = (WNDPROC)DialogProc;
+	wndc.hInstance = hInstance;
+	wndc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+	wndc.lpszClassName = TEXT("DialogClass");
+	RegisterClassExW(&wndc);
+
+}
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
@@ -30,28 +67,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 	switch (Msg)
 	{
+	////////////////////////////////////
 	case WM_SIZE:
 		cxClient = LOWORD(lParam);
 		cyClient = HIWORD(lParam);
 		break;
+	////////////////////////////////////
 	case WM_CREATE:
 	{
 
-	
+		RegisterDialogClass(hwnd);
 		HMENU menu =  GetSystemMenu(hwnd, TRUE);
 		LPCWSTR button01_ID = L"BUTTON";
 		LPCWSTR button01_text = L"FONT";
 		HWND button01 = CreateWindowEx(WS_EX_WINDOWEDGE, button01_ID, button01_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 5, 105, 25, hwnd, (HMENU)BUTTON_01, NULL, NULL);
 
 		LPCWSTR button02_ID = L"BUTTON";
-		LPCWSTR button02_text = L"TXT BOX";
-		HWND button02 = CreateWindowEx(NULL, button02_ID, button02_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 35, 85, 25, hwnd, (HMENU)BUTTON_02, NULL, NULL);
+		LPCWSTR button02_text = L"DIALOG BOX";
+		HWND button02 = CreateWindowEx(NULL, button02_ID, button02_text, BS_DEFPUSHBUTTON | WS_VISIBLE | WS_BORDER | WS_CHILD, 5, 35, 105, 25, hwnd, (HMENU)BUTTON_02, NULL, NULL);
 
 		hWndSizeBox = CreateWindowEx(NULL, TEXT("Scrollbar"), 0, WS_CHILD | WSF_VISIBLE | WS_VISIBLE | SBS_SIZEBOXTOPLEFTALIGN, 50, 100, 0, NULL, hwnd, (HMENU)NULL, NULL, NULL);
 		
 
 	}
 	break;
+	//////////////////////////////////
 	case WM_PAINT:
 		ContextHandle = BeginPaint(hwnd, &PaintStructure);
 		GetClientRect(hwnd, &ClientRectangle);
@@ -61,7 +101,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 		EndPaint(hwnd, &PaintStructure);
 
 		return 0;
-
+	//////////////////////////////////
 	case WM_COMMAND:
 
 	{
@@ -74,10 +114,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			SendMessage(TextBox, WM_SETFONT, (WPARAM)Font, TRUE);
 			break; }
 		case BUTTON_02: {
-			TextBox = CreateWindowEx((DWORD)NULL, TEXT("EDIT"), TEXT("DEFAULT FONT"), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL | DT_VCENTER,
-
-				5, 65, 200, 25, hwnd, (HMENU)NULL, NULL, NULL);
-			RedrawWindow(hwnd, NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
+			
+			CreateDialogBox(hwnd);
 			
 			break; }
 		}
@@ -85,6 +123,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 	break;
 
+	//////////////////////////////
 	case WM_KEYDOWN:   // keyboard input
 	{
 		switch (wParam)
@@ -107,7 +146,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			break;
 		}
 	}
-
+	/////////////////////////////
 	case WM_SYSCOMMAND:
 		switch (LOWORD(wParam)) {
 		case IDM_SYS_CHANGE: {
@@ -121,12 +160,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 		}
 							return 0;
 		case IDM_SYS_HELP: {
-			MessageBox(NULL, L"Ask Irina for Help!", L"ATENTION", NULL);
+			TextBox = CreateWindowEx((DWORD)NULL, TEXT("EDIT"), TEXT("DEFAULT FONT"), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL | DT_VCENTER,
+
+			5, 65, 200, 25, hwnd, (HMENU)NULL, NULL, NULL);
+			RedrawWindow(hwnd, NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
+			
 			break;
 		}
 		}
 		break;
-
+	/////////////////////////////
 	case WM_CLOSE:
 	{
 		if (MessageBox(hwnd, L"Do you want to exit?", L"Exit", MB_OKCANCEL) == IDOK)
@@ -134,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	break;
-
+	/////////////////////////////
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
@@ -142,13 +185,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd, Msg, wParam, lParam);
 }
 
+
+
+//\\\\\\\\\\\     WINMAIN FUNCTION \\\\\\\\\\\\/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
 	WNDCLASSEX wc;
 	MSG msg;
 	HWND hwnd;
 	HMENU hMenu;
-	HACCEL accel;
 	ZeroMemory(&wc, sizeof(wc));
 
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -182,16 +227,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	hMenu = GetSystemMenu(hwnd, FALSE);
 
 	AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hMenu, MF_STRING, IDM_SYS_ABOUT, TEXT("About"));
-	AppendMenu(hMenu, MF_STRING, IDM_SYS_HELP, TEXT("Help"));
+	AppendMenu(hMenu, MF_STRING, IDM_SYS_ABOUT, TEXT("ABOUT"));
+	AppendMenu(hMenu, MF_STRING, IDM_SYS_HELP, TEXT("TXT BOX"));
 	AppendMenu(hMenu, MF_STRING, IDM_SYS_CHANGE, TEXT("CHANGE"));
 
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
-
-	
-	
-
 
 	while (GetMessage(&msg, 0, 0, 0)) {
 	
