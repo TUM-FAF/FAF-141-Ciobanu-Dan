@@ -2,8 +2,6 @@
 #include<math.h>
 #include "resource.h"
 
-#define ID_EDIT     10
-
 LPCWSTR ClassName = L"mainClass";
 
 #define BUTTON_01 1
@@ -19,9 +17,7 @@ LPCWSTR ClassName = L"mainClass";
 
 HWND TextBox;
 HWND hWndSizeBox;
-HWND hWndHorzScroll;
-HWND hWndVertScroll;
-int iHThumb, iVThumb;
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 	HDC ContextHandle;
