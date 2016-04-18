@@ -169,7 +169,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 				hdc = GetDC(hwnd);
 				GetClientRect(hwnd, &ClientRectangle);
 				draw_objects(hdc);
-				SendMessage(hwnd, WM_PAINT, 0, 0);
+				
 				DrawBezier(hdc, Pt);
 				DrawBezier(hdc, Pt1);
 				ReleaseDC(hwnd, hdc);
@@ -316,7 +316,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MessageBox(NULL, Error01, Error10_Caption, MB_OK | MB_ICONERROR);
 	}
 
-	LPCWSTR WindowTitle = L"LAB 1";
+	LPCWSTR WindowTitle = L"LAB 3";
 
 	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, ClassName, WindowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 		800, 500, NULL, NULL, hInstance, NULL);
