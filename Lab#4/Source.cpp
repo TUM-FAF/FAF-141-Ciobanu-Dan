@@ -16,6 +16,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 			return 0; 
 		case WM_CREATE:
 		{
+			GetMapMode(hdc);
+			SetMapMode(hdc, MM_LOENGLISH);
 			GetClientRect(hwnd, &rectangle);
 
 			int time = SetTimer(hwnd, ID_TIMER, 5, NULL);
@@ -36,6 +38,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 
 		case WM_RBUTTONDOWN:
+			// Create a new shape and extending the vector for proccessing all the objects
 			shp = new shape(rand() % rectangle.right, rand() % rectangle.bottom, 50, 50);
 			shp->setColor(rand() % 255, rand() % 255, rand() % 255);
 			shp->setDirection(rand() % 4);
@@ -93,7 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.hInstance = hInstance;
 	wc.hIconSm = LoadIcon(NULL, IDC_ICON);
 	wc.hIcon = LoadIcon(NULL, IDC_ICON);
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wc.hbrBackground = CreateSolidBrush(COLOR_WINDOW);
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.cbClsExtra = 0;
 
